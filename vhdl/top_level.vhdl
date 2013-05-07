@@ -31,13 +31,13 @@ end entity;
 
 architecture rtl of top_level is
 	signal rgb_sync : std_logic_vector(2 downto 0) := "000";
+	signal pixClk   : std_logic := '0';
 	signal pixX     : unsigned(9 downto 0);
 	signal pixY     : unsigned(9 downto 0);
-	signal pixClk   : std_logic := '0';
 	signal locked   : std_logic;
 	signal reset    : std_logic;
 begin
-	-- Instantiate VGA sync circuit
+	-- Instantiate VGA sync circuit, driven with the 25MHz pixel clock
 	vga_sync: entity work.vga_sync
 		port map(
 			clk_in     => pixClk,
@@ -58,7 +58,7 @@ begin
 			LOCKED_OUT      => locked
 		);
 
-	-- rgb buffer
+	-- Synchronise RGB switch inputs
 	process(pixClk)
 	begin
 		if ( rising_edge(pixClk) ) then
@@ -66,8 +66,10 @@ begin
 		end if;
 	end process;
 
+	-- We're in reset until the DLL locks on
 	reset <= not(locked);
-	
+
+	-- Set the visible area to the chosen colour, and the borders to black
 	rgb_out <=
 		rgb_sync when pixX < 640 and pixY < 480
 		else "000";
