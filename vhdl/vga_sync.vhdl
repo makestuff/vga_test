@@ -22,16 +22,16 @@ use ieee.numeric_std.all;
 entity vga_sync is
 	generic(
 		-- Horizontal parameters (numbers are pixel clock counts)
-		HORIZ_DISP : integer := 640;  -- display area
-		HORIZ_FP   : integer := 16;   -- front porch
-		HORIZ_RT   : integer := 96;   -- beam retrace
-		HORIZ_BP   : integer := 48;   -- back porch
+		HORIZ_DISP : integer;  -- display area
+		HORIZ_FP   : integer;  -- front porch
+		HORIZ_RT   : integer;  -- beam retrace
+		HORIZ_BP   : integer;  -- back porch
 
 		-- Vertical parameters (in line counts)
-		VERT_DISP  : integer := 480;  -- display area
-		VERT_FP    : integer := 10;   -- front porch
-		VERT_RT    : integer := 2;    -- beam retrace
-		VERT_BP    : integer := 31    -- back porch
+		VERT_DISP  : integer;  -- display area
+		VERT_FP    : integer;  -- front porch
+		VERT_RT    : integer;  -- beam retrace
+		VERT_BP    : integer   -- back porch
 	);
 	port(
 		clk_in     : in std_logic;

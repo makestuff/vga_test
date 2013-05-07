@@ -36,9 +36,28 @@ architecture rtl of top_level is
 	signal pixY     : unsigned(9 downto 0);
 	signal locked   : std_logic;
 	signal reset    : std_logic;
+	constant HRES   : integer := 640;
+	constant VRES   : integer := 480;
+	--constant VRES   : integer := 512;
 begin
 	-- Instantiate VGA sync circuit, driven with the 25MHz pixel clock
 	vga_sync: entity work.vga_sync
+		generic map (
+			-- Horizontal parameters (numbers are pixel clock counts)
+			HORIZ_DISP => HRES,
+			HORIZ_FP   => 16,
+			HORIZ_RT   => 96,
+			HORIZ_BP   => 48,
+
+			-- Vertical parameters (in line counts)
+			VERT_DISP  => VRES,
+			VERT_FP    => 10,  -- 640x480 @ 60Hz
+			VERT_RT    => 2,
+			VERT_BP    => 29
+			--VERT_FP    => 45,  -- 640x512 @ 50Hz
+			--VERT_RT    => 2,
+			--VERT_BP    => 66
+		)
 		port map(
 			clk_in     => pixClk,
 			reset_in   => reset,
@@ -71,6 +90,6 @@ begin
 
 	-- Set the visible area to the chosen colour, and the borders to black
 	rgb_out <=
-		rgb_sync when pixX < 640 and pixY < 480
+		rgb_sync when pixX < HRES and pixY < VRES
 		else "000";
 end architecture;
