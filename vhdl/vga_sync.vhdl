@@ -21,7 +21,7 @@ use ieee.numeric_std.all;
 
 entity vga_sync is
 	generic(
-		-- Horizontal parameters (numbers are pixClk counts)
+		-- Horizontal parameters (numbers are pixel clock counts)
 		HORIZ_DISP : integer := 640;  -- display area
 		HORIZ_FP   : integer := 16;   -- front porch
 		HORIZ_RT   : integer := 96;   -- beam retrace
@@ -34,8 +34,7 @@ entity vga_sync is
 		VERT_BP    : integer := 31    -- back porch
 	);
 	port(
-		sysClk_in  : in std_logic;
-		pixClk_in  : in std_logic;
+		clk_in  : in std_logic;
 		hSync_out  : out std_logic;
 		vSync_out  : out std_logic;
 		pixX_out   : out unsigned(9 downto 0);
@@ -61,9 +60,9 @@ architecture arch of vga_sync is
 	signal vEnd        : std_logic;
 begin
 	-- Registers
-	process(sysClk_in)
+	process(clk_in)
 	begin
-		if ( rising_edge(sysClk_in) ) then
+		if ( rising_edge(clk_in) ) then
 			vCount <= vCount_next;
 			hCount <= hCount_next;
 			vSync <= vSync_next;
@@ -82,13 +81,13 @@ begin
 		else '0';
 
 	hCount_next <=
-		(others => '0') when pixClk_in = '1' and hEnd = '1' else
-		hCount + 1      when pixClk_in = '1' and hEnd = '0' else
+		(others => '0') when hEnd = '1' else
+		hCount + 1      when hEnd = '0' else
 		hCount;
 
 	vCount_next <=
-		(others => '0') when pixClk_in = '1' and hEnd = '1' and vEnd = '1' else
-		vCount + 1      when pixClk_in = '1' and hEnd = '1' and vEnd = '0' else
+		(others => '0') when hEnd = '1' and vEnd = '1' else
+		vCount + 1      when hEnd = '1' and vEnd = '0' else
 		vCount;
 	
 	-- Registered horizontal and vertical syncs

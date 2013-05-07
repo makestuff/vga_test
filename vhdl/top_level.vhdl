@@ -41,8 +41,7 @@ begin
 	-- Instantiate VGA sync circuit
 	vga_sync: entity work.vga_sync
 		port map(
-			sysClk_in  => sysClk_in,
-			pixClk_in  => pixClk,
+			clk_in     => pixClk,
 			hSync_out  => hSync_out,
 			vSync_out  => vSync_out,
 			pixX_out   => pixX,
