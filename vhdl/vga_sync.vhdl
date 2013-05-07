@@ -20,6 +20,19 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
 entity vga_sync is
+	generic(
+		-- Horizontal parameters (numbers are pixClk counts)
+		HORIZ_DISP : integer := 640;  -- display area
+		HORIZ_FP   : integer := 16;   -- front porch
+		HORIZ_RT   : integer := 96;   -- beam retrace
+		HORIZ_BP   : integer := 48;   -- back porch
+
+		-- Vertical parameters (in line counts)
+		VERT_DISP  : integer := 480;  -- display area
+		VERT_FP    : integer := 10;   -- front porch
+		VERT_RT    : integer := 2;    -- beam retrace
+		VERT_BP    : integer := 31    -- back porch
+	);
 	port(
 		sysClk_in  : in std_logic;
 		hsync_out  : out std_logic;
@@ -32,16 +45,6 @@ entity vga_sync is
 end vga_sync;
 
 architecture arch of vga_sync is
-	-- VGA 640-by-480 sync parameters
-	constant HD: integer := 640; -- horizontal display area
-	constant HF: integer := 16 ; -- h. front porch
-	constant HB: integer := 48 ; -- h. back porch
-	constant HR: integer := 96 ; -- h. retrace
-	constant VD: integer := 480; -- vertical display area
-	constant VF: integer := 10;  -- v. front porch
-	constant VB: integer := 33;  -- v. back porch
-	constant VR: integer := 2;   -- v. retrace
-	
 	-- Pixel clock: sysClk/2 = 25MHz
 	signal pixClk      : std_logic := '0';
 	signal pixClk_next : std_logic;
@@ -79,12 +82,12 @@ begin
 	
 	-- End-of-line flag
 	hEnd <=  -- end of horizontal counter
-		'1' when hCount = (HD + HF + HB + HR - 1) --799
+		'1' when hCount = (HORIZ_DISP + HORIZ_FP + HORIZ_BP + HORIZ_RT - 1) --799
 		else '0';
 
 	-- End-of-screen flag
 	vEnd <=  -- end of vertical counter
-		'1' when vCount = (VD + VF + VB + VR - 1) --524
+		'1' when vCount = (VERT_DISP + VERT_FP + VERT_BP + VERT_RT - 1) --524
 		else '0';
 	
 	-- Horizontal sync counter: 0-799
@@ -117,18 +120,18 @@ begin
 	
 	-- Registered horizontal and vertical syncs
 	hSync_next <=
-		'1' when (hCount >= (HD + HF))
-		     and (hCount <= (HD + HF + HR - 1)) else
+		'1' when (hCount >= (HORIZ_DISP + HORIZ_FP))
+		     and (hCount <= (HORIZ_DISP + HORIZ_FP + HORIZ_RT - 1)) else
 		'0';
 
 	vSync_next <=
-		'1' when (vCount >= (VD + VF))
-		     and (vCount <= (VD + VF + VR - 1)) else
+		'1' when (vCount >= (VERT_DISP + VERT_FP))
+		     and (vCount <= (VERT_DISP + VERT_FP + VERT_RT - 1)) else
 		'0';
 	
 	-- Video on/off
 	vidOn_out <=
-		'1' when (hCount < HD) and (vCount < VD) else
+		'1' when (hCount < HORIZ_DISP) and (vCount < VERT_DISP) else
 		'0';
 	
 	-- Drive output signals
