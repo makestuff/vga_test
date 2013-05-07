@@ -120,14 +120,12 @@ begin
 	
 	-- Registered horizontal and vertical syncs
 	hSync_next <=
-		'1' when (hCount >= (HORIZ_DISP + HORIZ_FP))
-		     and (hCount <= (HORIZ_DISP + HORIZ_FP + HORIZ_RT - 1)) else
-		'0';
+		'1' when (hCount >= HORIZ_DISP + HORIZ_FP) and (hCount < HORIZ_DISP + HORIZ_FP + HORIZ_RT)
+		else '0';
 
 	vSync_next <=
-		'1' when (vCount >= (VERT_DISP + VERT_FP))
-		     and (vCount <= (VERT_DISP + VERT_FP + VERT_RT - 1)) else
-		'0';
+		'1' when (vCount >= VERT_DISP + VERT_FP) and (vCount < VERT_DISP + VERT_FP + VERT_RT)
+		else '0';
 	
 	-- Video on/off
 	vidOn_out <=
