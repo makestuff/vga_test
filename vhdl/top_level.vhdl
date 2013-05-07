@@ -42,6 +42,7 @@ begin
 	vga_sync: entity work.vga_sync
 		port map(
 			clk_in     => pixClk,
+			reset_in   => '0',
 			hSync_out  => hSync_out,
 			vSync_out  => vSync_out,
 			pixX_out   => pixX,

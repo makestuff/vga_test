@@ -34,7 +34,8 @@ entity vga_sync is
 		VERT_BP    : integer := 31    -- back porch
 	);
 	port(
-		clk_in  : in std_logic;
+		clk_in     : in std_logic;
+		reset_in   : in std_logic;
 		hSync_out  : out std_logic;
 		vSync_out  : out std_logic;
 		pixX_out   : out unsigned(9 downto 0);
@@ -63,10 +64,17 @@ begin
 	process(clk_in)
 	begin
 		if ( rising_edge(clk_in) ) then
-			vCount <= vCount_next;
-			hCount <= hCount_next;
-			vSync <= vSync_next;
-			hSync <= hSync_next;
+			if ( reset_in = '1' ) then
+				vCount <= (others => '0');
+				hCount <= (others => '0');
+				vSync <= '1';
+				hSync <= '1';
+			else
+				vCount <= vCount_next;
+				hCount <= hCount_next;
+				vSync <= vSync_next;
+				hSync <= hSync_next;
+			end if;
 		end if;
 	end process;
 
