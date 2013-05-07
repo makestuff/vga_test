@@ -79,19 +79,18 @@ begin
 	end process;
 
 	-- End-of-line flag
-	hEnd <=  -- end of horizontal counter
-		'1' when hCount = (HORIZ_DISP + HORIZ_FP + HORIZ_BP + HORIZ_RT - 1) --799
+	hEnd <=
+		'1' when hCount = HORIZ_DISP + HORIZ_FP + HORIZ_BP + HORIZ_RT - 1
 		else '0';
 
 	-- End-of-screen flag
-	vEnd <=  -- end of vertical counter
-		'1' when vCount = (VERT_DISP + VERT_FP + VERT_BP + VERT_RT - 1) --524
+	vEnd <=
+		'1' when vCount = VERT_DISP + VERT_FP + VERT_BP + VERT_RT - 1
 		else '0';
 
 	hCount_next <=
 		(others => '0') when hEnd = '1' else
-		hCount + 1      when hEnd = '0' else
-		hCount;
+		hCount + 1      when hEnd = '0';
 
 	vCount_next <=
 		(others => '0') when hEnd = '1' and vEnd = '1' else
@@ -100,11 +99,11 @@ begin
 	
 	-- Registered horizontal and vertical syncs
 	hSync_next <=
-		'1' when (hCount >= HORIZ_DISP + HORIZ_FP) and (hCount < HORIZ_DISP + HORIZ_FP + HORIZ_RT)
+		'1' when hCount >= HORIZ_DISP + HORIZ_FP and hCount < HORIZ_DISP + HORIZ_FP + HORIZ_RT
 		else '0';
 
 	vSync_next <=
-		'1' when (vCount >= VERT_DISP + VERT_FP) and (vCount < VERT_DISP + VERT_FP + VERT_RT)
+		'1' when vCount >= VERT_DISP + VERT_FP and vCount < VERT_DISP + VERT_FP + VERT_RT
 		else '0';
 	
 	-- Drive output signals
