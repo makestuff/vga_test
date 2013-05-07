@@ -83,15 +83,17 @@ begin
 		'1' when hCount = HORIZ_DISP + HORIZ_FP + HORIZ_BP + HORIZ_RT - 1
 		else '0';
 
-	-- End-of-screen flag
+	-- End-of-frame flag
 	vEnd <=
 		'1' when vCount = VERT_DISP + VERT_FP + VERT_BP + VERT_RT - 1
 		else '0';
 
+	-- Current pixel within the current line, 0-639 for 640x480@60Hz
 	hCount_next <=
 		(others => '0') when hEnd = '1' else
 		hCount + 1      when hEnd = '0';
 
+	-- Current line within the current frame, 0-524 for 640x480@60Hz
 	vCount_next <=
 		(others => '0') when hEnd = '1' and vEnd = '1' else
 		vCount + 1      when hEnd = '1' and vEnd = '0' else
@@ -99,12 +101,11 @@ begin
 	
 	-- Registered horizontal and vertical syncs
 	hSync_next <=
-		'1' when hCount >= HORIZ_DISP + HORIZ_FP and hCount < HORIZ_DISP + HORIZ_FP + HORIZ_RT
-		else '0';
-
+		'0' when hCount >= HORIZ_DISP + HORIZ_FP and hCount < HORIZ_DISP + HORIZ_FP + HORIZ_RT
+		else '1';
 	vSync_next <=
-		'1' when vCount >= VERT_DISP + VERT_FP and vCount < VERT_DISP + VERT_FP + VERT_RT
-		else '0';
+		'0' when vCount >= VERT_DISP + VERT_FP and vCount < VERT_DISP + VERT_FP + VERT_RT
+		else '1';
 	
 	-- Drive output signals
 	hSync_out <= hSync;
