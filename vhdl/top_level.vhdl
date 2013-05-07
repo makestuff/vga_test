@@ -33,32 +33,40 @@ architecture rtl of top_level is
 	signal rgb_sync : std_logic_vector(2 downto 0) := "000";
 	signal pixX     : unsigned(9 downto 0);
 	signal pixY     : unsigned(9 downto 0);
-
-	-- Pixel clock: sysClk/2 = 25MHz
-	signal pixClk      : std_logic := '0';
-	signal pixClk_next : std_logic;
+	signal pixClk   : std_logic := '0';
+	signal locked   : std_logic;
+	signal reset    : std_logic;
 begin
 	-- Instantiate VGA sync circuit
 	vga_sync: entity work.vga_sync
 		port map(
 			clk_in     => pixClk,
-			reset_in   => '0',
+			reset_in   => reset,
 			hSync_out  => hSync_out,
 			vSync_out  => vSync_out,
 			pixX_out   => pixX,
 			pixY_out   => pixY
 		);
-	
+
+	-- Generate the 25MHz pixel clock from the main 50MHz crystal
+	clk_gen: entity work.clk_gen
+		port map(
+			CLKIN_IN        => sysClk_in,
+			CLKDV_OUT       => pixClk,
+			CLKIN_IBUFG_OUT => open,
+			CLK0_OUT        => open,
+			LOCKED_OUT      => locked
+		);
+
 	-- rgb buffer
-	process(sysClk_in)
+	process(pixClk)
 	begin
-		if ( rising_edge(sysClk_in) ) then
+		if ( rising_edge(pixClk) ) then
 			rgb_sync <= sw_in;
-			pixClk <= pixClk_next;
 		end if;
 	end process;
 
-	pixClk_next <= not(pixClk);
+	reset <= not(locked);
 	
 	rgb_out <=
 		rgb_sync when pixX < 640 and pixY < 480
