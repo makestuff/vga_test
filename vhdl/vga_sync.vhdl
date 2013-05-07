@@ -35,6 +35,7 @@ entity vga_sync is
 	);
 	port(
 		sysClk_in  : in std_logic;
+		pixClk_in  : in std_logic;
 		hSync_out  : out std_logic;
 		vSync_out  : out std_logic;
 		pixX_out   : out unsigned(9 downto 0);
@@ -43,10 +44,6 @@ entity vga_sync is
 end vga_sync;
 
 architecture arch of vga_sync is
-	-- Pixel clock: sysClk/2 = 25MHz
-	signal pixClk      : std_logic := '0';
-	signal pixClk_next : std_logic;
-	
 	-- Line & pixel counters
 	signal vCount      : unsigned(9 downto 0) := (others => '0');
 	signal vCount_next : unsigned(9 downto 0);
@@ -67,7 +64,6 @@ begin
 	process(sysClk_in)
 	begin
 		if ( rising_edge(sysClk_in) ) then
-			pixClk <= pixClk_next;
 			vCount <= vCount_next;
 			hCount <= hCount_next;
 			vSync <= vSync_next;
@@ -75,9 +71,6 @@ begin
 		end if;
 	end process;
 
-	-- Generate 25MHz pixel clock
-	pixClk_next <= not pixClk;
-	
 	-- End-of-line flag
 	hEnd <=  -- end of horizontal counter
 		'1' when hCount = (HORIZ_DISP + HORIZ_FP + HORIZ_BP + HORIZ_RT - 1) --799
@@ -87,34 +80,16 @@ begin
 	vEnd <=  -- end of vertical counter
 		'1' when vCount = (VERT_DISP + VERT_FP + VERT_BP + VERT_RT - 1) --524
 		else '0';
-	
-	-- Horizontal sync counter: 0-799
-	process(hCount, hEnd, pixClk)
-	begin
-		if ( pixClk = '1' ) then
-			if ( hEnd = '1' ) then
-				hCount_next <= (others => '0');
-			else
-				hCount_next <= hCount + 1;
-			end if;
-		else
-			hCount_next <= hCount;
-		end if;
-	end process;
-	
-	-- Vertical sync counter: 0-524
-	process(vCount, hEnd, vEnd, pixClk)
-	begin
-		if ( pixClk = '1' and hEnd = '1' ) then
-			if ( vEnd = '1' ) then
-				vCount_next <= (others => '0');
-			else
-				vCount_next <= vCount + 1;
-			end if;
-		else
-			vCount_next <= vCount;
-		end if;
-	end process;
+
+	hCount_next <=
+		(others => '0') when pixClk_in = '1' and hEnd = '1' else
+		hCount + 1      when pixClk_in = '1' and hEnd = '0' else
+		hCount;
+
+	vCount_next <=
+		(others => '0') when pixClk_in = '1' and hEnd = '1' and vEnd = '1' else
+		vCount + 1      when pixClk_in = '1' and hEnd = '1' and vEnd = '0' else
+		vCount;
 	
 	-- Registered horizontal and vertical syncs
 	hSync_next <=
