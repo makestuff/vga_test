@@ -1,0 +1,29 @@
+#
+# Copyright (C) 2009-2012 Chris McClelland
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Lesser General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+
+#===============================================================================
+# System clock and a pair of LEDs
+#===============================================================================
+NET "sysClk_in"       LOC="P123" | IOSTANDARD=LVTTL;   # IFCLK
+NET "led_out<0>"      LOC="P33"  | IOSTANDARD=LVTTL;
+NET "led_out<1>"      LOC="P32"  | IOSTANDARD=LVTTL;
+
+#===============================================================================
+# Timing constraint of FX2 48MHz clock "sysClk_in"
+#===============================================================================
+NET "sysClk_in" TNM_NET = "sysClk_in";
+TIMESPEC "TS_clk" = PERIOD "sysClk_in" 20.833 ns HIGH 50 %;

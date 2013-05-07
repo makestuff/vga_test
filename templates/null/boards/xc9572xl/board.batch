@@ -1,0 +1,16 @@
+setPreference -pref AutoSignature:FALSE
+setPreference -pref KeepSVF:TRUE
+setPreference -pref ConcurrentMode:FALSE
+setPreference -pref UseHighz:FALSE
+setPreference -pref svfUseTime:FALSE
+setPreference -pref SpiByteSwap:AUTO_CORRECTION
+setMode -bs
+setMode -bs
+setMode -bs
+setMode -bs
+setCable -port xsvf -file top_level.xsvf
+addDevice -p 1 -file top_level.jed
+erase -p 1
+program -p 1
+deleteDevice -position 1
+quit
