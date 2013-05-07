@@ -35,12 +35,10 @@ entity vga_sync is
 	);
 	port(
 		sysClk_in  : in std_logic;
-		hsync_out  : out std_logic;
-		vsync_out  : out std_logic;
-		vidOn_out  : out std_logic;
-		pixClk_out : out std_logic;
-		pixX_out   : out std_logic_vector (9 downto 0);
-		pixY_out   : out std_logic_vector (9 downto 0)
+		hSync_out  : out std_logic;
+		vSync_out  : out std_logic;
+		pixX_out   : out unsigned(9 downto 0);
+		pixY_out   : out unsigned(9 downto 0)
 	);
 end vga_sync;
 
@@ -127,15 +125,9 @@ begin
 		'1' when (vCount >= VERT_DISP + VERT_FP) and (vCount < VERT_DISP + VERT_FP + VERT_RT)
 		else '0';
 	
-	-- Video on/off
-	vidOn_out <=
-		'1' when (hCount < HORIZ_DISP) and (vCount < VERT_DISP) else
-		'0';
-	
 	-- Drive output signals
 	hSync_out <= hSync;
 	vSync_out <= vSync;
-	pixX_out <= std_logic_vector(hCount);
-	pixY_out <= std_logic_vector(vCount);
-	pixClk_out <= pixClk;
+	pixX_out <= hCount;
+	pixY_out <= vCount;
 end arch;

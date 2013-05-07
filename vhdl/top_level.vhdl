@@ -17,31 +17,31 @@
 library ieee;
 
 use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
 
 entity top_level is
 	port (
 		sysClk_in : in  std_logic;
 		sw_in     : in  std_logic_vector(2 downto 0);
-		hsync_out : out std_logic;
-		vsync_out : out std_logic;
+		hSync_out : out std_logic;
+		vSync_out : out std_logic;
 		rgb_out   : out std_logic_vector(2 downto 0)
 	);
 end entity;
 
 architecture rtl of top_level is
 	signal rgb_sync : std_logic_vector(2 downto 0) := "000";
-	signal vidOn    : std_logic;
+	signal pixX     : unsigned(9 downto 0);
+	signal pixY     : unsigned(9 downto 0);
 begin
 	-- Instantiate VGA sync circuit
 	vga_sync: entity work.vga_sync
 		port map(
 			sysClk_in  => sysClk_in,
-			hsync_out  => hsync_out,
-			vsync_out  => vsync_out,
-			vidOn_out  => vidOn,
-			pixClk_out => open,
-			pixX_out   => open,
-			pixY_out   => open
+			hSync_out  => hSync_out,
+			vSync_out  => vSync_out,
+			pixX_out   => pixX,
+			pixY_out   => pixY
 		);
 	
 	-- rgb buffer
@@ -51,5 +51,7 @@ begin
 			rgb_sync <= sw_in;
 		end if;
 	end process;
-	rgb_out <= rgb_sync when vidOn = '1' else "000";
+	rgb_out <=
+		rgb_sync when pixX < 640 and pixY < 480
+		else "000";
 end architecture;
