@@ -22,33 +22,36 @@ use ieee.numeric_std.all;
 entity vga_sync is
 	generic(
 		-- Horizontal parameters (numbers are pixel clock counts)
-		HORIZ_DISP : integer;  -- display area
-		HORIZ_FP   : integer;  -- front porch
-		HORIZ_RT   : integer;  -- beam retrace
-		HORIZ_BP   : integer;  -- back porch
+		HORIZ_DISP  : integer := 640;  -- display area
+		HORIZ_FP    : integer := 16;   -- front porch
+		HORIZ_RT    : integer := 96;   -- beam retrace
+		HORIZ_BP    : integer := 48;   -- back porch
 
 		-- Vertical parameters (in line counts)
-		VERT_DISP  : integer;  -- display area
-		VERT_FP    : integer;  -- front porch
-		VERT_RT    : integer;  -- beam retrace
-		VERT_BP    : integer   -- back porch
+		VERT_DISP   : integer := 480;  -- display area
+		VERT_FP     : integer := 10;   -- front porch
+		VERT_RT     : integer := 2;    -- beam retrace
+		VERT_BP     : integer := 29;   -- back porch
+
+		-- Pixel coordinate bit-widths
+		COORD_WIDTH : integer := 10
 	);
 	port(
 		clk_in     : in std_logic;
 		reset_in   : in std_logic;
 		hSync_out  : out std_logic;
 		vSync_out  : out std_logic;
-		pixX_out   : out unsigned(9 downto 0);
-		pixY_out   : out unsigned(9 downto 0)
+		pixX_out   : out unsigned(COORD_WIDTH-1 downto 0) := (others => '0');
+		pixY_out   : out unsigned(COORD_WIDTH-1 downto 0) := (others => '0')
 	);
 end vga_sync;
 
 architecture arch of vga_sync is
 	-- Line & pixel counters
-	signal vCount      : unsigned(9 downto 0) := (others => '0');
-	signal vCount_next : unsigned(9 downto 0);
-	signal hCount      : unsigned(9 downto 0) := (others => '0');
-	signal hCount_next : unsigned(9 downto 0);
+	signal vCount      : unsigned(COORD_WIDTH-1 downto 0) := (others => '0');
+	signal vCount_next : unsigned(COORD_WIDTH-1 downto 0);
+	signal hCount      : unsigned(COORD_WIDTH-1 downto 0) := (others => '0');
+	signal hCount_next : unsigned(COORD_WIDTH-1 downto 0);
 	
 	-- Registered horizontal & vertical sync signals
 	signal vSync       : std_logic := '1';
@@ -90,14 +93,14 @@ begin
 
 	-- Current pixel within the current line, 0-639 for 640x480@60Hz
 	hCount_next <=
-		(others => '0') when hEnd = '1' else
-		hCount + 1      when hEnd = '0';
+		hCount + 1 when hEnd = '0' else
+		(others => '0');
 
 	-- Current line within the current frame, 0-524 for 640x480@60Hz
 	vCount_next <=
 		(others => '0') when hEnd = '1' and vEnd = '1' else
-		vCount + 1      when hEnd = '1' and vEnd = '0' else
-		vCount;
+		vCount + 1      when hEnd = '1' and vEnd = '0'
+		else vCount;
 	
 	-- Registered horizontal and vertical syncs
 	hSync_next <=

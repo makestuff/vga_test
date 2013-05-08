@@ -66,13 +66,11 @@ begin
 		);
 
 	-- Generate the 25MHz pixel clock from the main 50MHz crystal
-	clk_gen: entity work.clk_gen
+	clk_gen: entity work.clk_gen_wrapper
 		port map(
-			CLKIN_IN        => sysClk_in,
-			CLKDV_OUT       => pixClk,
-			CLKIN_IBUFG_OUT => open,
-			CLK0_OUT        => open,
-			LOCKED_OUT      => locked
+			clk_in     => sysClk_in,
+			clk_out    => pixClk,
+			locked_out => locked
 		);
 
 	-- We're in reset until the DLL locks on
