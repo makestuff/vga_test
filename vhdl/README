@@ -1,3 +1,4 @@
 Building the VHDL:
 
 ../../../../bin/hdlmake.py -t ../templates/null -b s3board
+../../../../bin/hdlmake.py -t ../templates/null -b ep2c5
