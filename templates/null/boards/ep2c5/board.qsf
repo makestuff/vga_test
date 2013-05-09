@@ -22,7 +22,8 @@ set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_
 #===============================================================================
 # System clock and a pair of LEDs
 #===============================================================================
-set_location_assignment PIN_17  -to sysClk_in
+set_location_assignment PIN_17  -to sysClk_in   # 50MHz clock on pin 17
+#set_location_assignment PIN_91  -to sysClk_in   # 16MHz clock on pin 91
 set_location_assignment PIN_113 -to rgb_out[0]
 set_location_assignment PIN_115 -to rgb_out[1]
 set_location_assignment PIN_119 -to rgb_out[2]

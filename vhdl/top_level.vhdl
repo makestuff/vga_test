@@ -65,7 +65,7 @@ begin
 			pixY_out   => pixY
 		);
 
-	-- Generate the 25MHz pixel clock from the main 50MHz crystal
+	-- Generate the 25MHz pixel clock from the input clock
 	clk_gen: entity work.clk_gen_wrapper
 		port map(
 			clk_in     => sysClk_in,
