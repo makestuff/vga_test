@@ -27,29 +27,29 @@ architecture behavioural of vga_sync_tb is
 	signal dispClk : std_logic;  -- display version of sysClk, which leads it by 4ns
 	signal hSync   : std_logic;
 	signal vSync   : std_logic;
-	signal pixX    : unsigned(3 downto 0);  -- current pixel's X coordinate
-	signal pixY    : unsigned(3 downto 0);  -- current pixel's Y coordinate
+	signal pixX    : unsigned(4 downto 0);  -- current pixel's X coordinate
+	signal pixY    : unsigned(4 downto 0);  -- current pixel's Y coordinate
 	signal display : std_logic;
-	constant HRES  : integer := 8;        -- horizontal resolution
-	constant VRES  : integer := 8;        -- vertical resolution
+	constant HRES  : integer := 16;        -- horizontal resolution
+	constant VRES  : integer := 16;        -- vertical resolution
 begin
 	-- Instantiate vga_sync for testing
 	uut: entity work.vga_sync
 		generic map (
 			-- Horizontal parameters (numbers are pixClk counts)
 			HORIZ_DISP => HRES,
-			HORIZ_FP   => 2,
+			HORIZ_FP   => 4,
 			HORIZ_RT   => 2,
-			HORIZ_BP   => 2,
+			HORIZ_BP   => 4,
 
 			-- Vertical parameters (in line counts)
 			VERT_DISP  => VRES,
-			VERT_FP    => 2,
+			VERT_FP    => 4,
 			VERT_RT    => 2,
-			VERT_BP    => 2,
+			VERT_BP    => 4,
 
 			-- Coordinate bit-width
-			COORD_WIDTH => 4
+			COORD_WIDTH => 5
 		)
 		port map(
 			clk_in     => sysClk,
