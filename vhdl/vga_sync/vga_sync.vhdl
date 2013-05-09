@@ -104,11 +104,12 @@ begin
 	
 	-- Registered horizontal and vertical syncs
 	hSync_next <=
-		'0' when hCount >= HORIZ_DISP + HORIZ_FP and hCount < HORIZ_DISP + HORIZ_FP + HORIZ_RT
+		'0' when hCount >= HORIZ_DISP + HORIZ_FP - 1 and hCount < HORIZ_DISP + HORIZ_FP + HORIZ_RT - 1
 		else '1';
 	vSync_next <=
-		'0' when vCount >= VERT_DISP + VERT_FP and vCount < VERT_DISP + VERT_FP + VERT_RT
-		else '1';
+		'0' when vCount = VERT_DISP + VERT_FP - 1 and hEnd = '1' else
+		'1' when vCount = VERT_DISP + VERT_FP + VERT_RT - 1 and hEnd = '1' else
+		vSync;
 	
 	-- Drive output signals
 	hSync_out <= hSync;
